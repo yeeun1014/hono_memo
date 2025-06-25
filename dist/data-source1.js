@@ -57,4 +57,5 @@ exports.AppDataSource = new typeorm_1.DataSource({
     synchronize: false,
     logging: false,
     entities: [path.join(__dirname, "/entities/**/*.{ts,js}")],
+    ssl: { rejectUnauthorized: false },
 });

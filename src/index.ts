@@ -1,5 +1,6 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { AppDataSource } from "./data-source1";
 import * as dotenv from "dotenv";
 import { TDummy1 } from "./entities/TDummy1";
@@ -17,6 +18,15 @@ const envFile =
     ? ".env.production"
     : ".env.development";
 dotenv.config({ path: envFile });
+
+app.use(
+  "*",
+  cors({
+    origin: "*",
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowHeaders: ["*"],
+  })
+);
 
 // 내가 만든 router 등록
 app.route("/test1", test1_route);

@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const node_server_1 = require("@hono/node-server");
 const hono_1 = require("hono");
+const cors_1 = require("hono/cors");
 const data_source1_1 = require("./data-source1");
 const dotenv = __importStar(require("dotenv"));
 const TDummy1_1 = require("./entities/TDummy1");
@@ -51,6 +52,11 @@ const envFile = process.env.NODE_ENV === "production"
     ? ".env.production"
     : ".env.development";
 dotenv.config({ path: envFile });
+app.use("*", (0, cors_1.cors)({
+    origin: "*",
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowHeaders: ["*"],
+}));
 // 내가 만든 router 등록
 app.route("/test1", test1_route_1.default);
 app.route("/api/memo", memo_1.default);
@@ -86,7 +92,7 @@ app.get("/", async (c) => {
  */
 (0, node_server_1.serve)({
     fetch: app.fetch,
-    port: 3000,
+    port: 3001,
 }, (info) => {
     console.log(`Server is running on http://localhost:${info.port}`);
 });

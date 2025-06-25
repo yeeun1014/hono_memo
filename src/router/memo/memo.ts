@@ -8,8 +8,8 @@ const router = new Hono();
 router.get("/list", async (c) => {
   let result: { success: boolean; data: any; code: string; message: string } = {
     success: true,
-    data: null,
     code: "",
+    data: null,
     message: ``,
   };
   try {
@@ -25,77 +25,94 @@ router.get("/list", async (c) => {
   }
 });
 
-router.post("/insert", async (c) => {
-  // 자료구조화된 객체
+router.get("/get_memo_by_idp", async (c) => {
   let result: { success: boolean; data: any; code: string; message: string } = {
     success: true,
-    data: null,
     code: "",
+    data: null,
     message: ``,
   };
   try {
-    // 클라이언트에서 json 데이터를 body로 보냄
-    let _body: any = await c.req.json(); // JSON 형태로 body 파싱
-
-    let name: string = _body?.name ?? "";
-    // AppDataSource == DB   t_dummy1 테이블에 접근할 준비를 해라. 전문용어로 repository
-    const dummy1Repo = AppDataSource.getRepository(TDummy1);
-
-    // 클래스를 진짜 사용하기위해서 인스턴스화 함. TDummy1 클래스를 직접 봐보면 @ 것들이 붙어있음
-    // 이건 클래스를 db테이블 이랑 1:1로 연결시킨것임
-    // 여기서 new TDummy1 이건 새로운 데이터란 뜻임
-    let newDummy1 = new TDummy1();
-    newDummy1.name = name;
-    // 테이블에 데이터 저장
-    let data = await dummy1Repo.save(newDummy1);
-    // result.data 여기에 데이터 가져올걸 저장시킴
-    result.data = data;
-    // 클라이언트에 보내줌
+    const idp = Number(c?.req?.query("idp"));
+    const memoRepo = AppDataSource.getRepository(TMemo);
+    let memos = await memoRepo.findOne({ where: { idp: idp } });
+    result.data = memos;
     return c.json(result);
   } catch (error: any) {
     result.success = false;
-    result.data = null;
-    result.message = `!!! test1.get 에러. ${error?.message ?? ""}`;
+    result.message = error?.message ?? "";
     return c.json(result);
   }
 });
 
-router.post("/update", async (c) => {
-  // 자료구조화된 객체
+router.post("/upsert", async (c) => {
   let result: { success: boolean; data: any; code: string; message: string } = {
     success: true,
-    data: null,
     code: "",
+    data: null,
     message: ``,
   };
   try {
-    // 클라이언트에서 json 데이터를 body로 보냄
-    let _body: any = await c.req.json(); // JSON 형태로 body 파싱
+    // const : 변경 불가능
+    const body = await c?.req?.json();
+    const idp = Number(body?.idp ?? 0);
+    let title = String(body?.title ?? "");
+    title = title?.trim();
+    let content = String(body?.content ?? "");
+    content = content?.trim();
 
-    let name: string = _body?.name ?? "";
-    let idp = Number(_body?.idp ?? 0);
-    console.log(idp);
-    // AppDataSource == DB   t_dummy1 테이블에 접근할 준비를 해라. 전문용어로 repository
-    const dummy1Repo = AppDataSource.getRepository(TDummy1);
+    if (!title || !content) {
+      result.success = false;
+      result.message = "제목이나 내용을 입력해주세요";
+      return c.json(result);
+    }
 
-    let existData =
-      (await dummy1Repo.findOne({ where: { idp: idp } })) ?? new TDummy1();
-    existData.name = name;
-    existData = await dummy1Repo.save(existData);
-    result.data = existData;
-    // 클라이언트에 보내줌
+    const memoRepo = AppDataSource.getRepository(TMemo);
+
+    /*
+    body 에서 준 idp(리엑트)와 실제 t_memo 테이블 데이터에 있는 idp를 비교해서
+    body idp 랑 완전히 똑같은 데이터 가져와라
+    못찾았으면, 새로운 데이터로 만들어라(idp=0, title="", content="")
+     */
+    let memo = (await memoRepo.findOne({ where: { idp: idp } })) ?? new TMemo();
+
+    memo.title = title;
+    memo.content = content;
+
+    memo = await memoRepo.save(memo);
+    result.data = memo;
     return c.json(result);
   } catch (error: any) {
     result.success = false;
-    result.data = null;
-    result.message = `!!! test1.get 에러. ${error?.message ?? ""}`;
+    result.message = error?.message ?? "";
     return c.json(result);
   }
 });
 
-router.get("/:id", (c) => {
-  const id = c.req.param("id");
-  return c.text(`👤 유저 상세: ${id}`);
+router.post("/delete", async (c) => {
+  let result: { success: boolean; data: any; code: string; message: string } = {
+    success: true,
+    code: "",
+    data: null,
+    message: ``,
+  };
+  try {
+    // 1. 요청에서 idp 추출
+    const body = await c.req.json();
+    const idp = body.idp;
+
+    // 2. TMemo 레포지토리 가져오기
+    const memoRepo = AppDataSource.getRepository(TMemo);
+
+    // 3. idp로 메모 찾기
+    const memo = await memoRepo.findOneBy({ idp: idp });
+
+    return c.json(result);
+  } catch (error: any) {
+    result.success = false;
+    result.message = error?.message ?? "";
+    return c.json(result);
+  }
 });
 
 export default router;
