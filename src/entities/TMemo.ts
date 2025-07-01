@@ -14,11 +14,11 @@ export class TMemo {
   })
   title: string | null;
 
-  @Column("text", { name: "content", nullable: true, default: () => "''''" })
+  @Column("text", { name: "content", nullable: true, default: () => "''''''" })
   content: string | null;
 
-  @Column("integer", { name: "userr_idp", nullable: true, default: () => "0" })
-  userrIdp: number | null;
+  @Column("integer", { name: "user_idp", nullable: true, default: () => "0" })
+  userIdp: number | null;
 
   @Column("timestamp with time zone", {
     name: "created_dt",

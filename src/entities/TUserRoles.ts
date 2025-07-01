@@ -18,7 +18,7 @@ export class TUserRoles {
     name: "role_name",
     nullable: true,
     length: 50,
-    default: () => "''''",
+    default: () => "''''''",
   })
   roleName: string | null;
 
@@ -26,6 +26,6 @@ export class TUserRoles {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   })
-  @JoinColumn([{ name: "uesr_idp", referencedColumnName: "idp" }])
-  uesrIdp: TUser;
+  @JoinColumn([{ name: "user_idp", referencedColumnName: "idp" }])
+  userIdp: TUser;
 }

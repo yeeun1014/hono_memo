@@ -17,7 +17,7 @@ export class TUser {
     name: "username",
     nullable: true,
     length: 50,
-    default: () => "''''",
+    default: () => "''''''",
   })
   username: string | null;
 
@@ -29,6 +29,6 @@ export class TUser {
   })
   password: string | null;
 
-  @OneToMany(() => TUserRoles, (tUserRoles) => tUserRoles.uesrIdp)
+  @OneToMany(() => TUserRoles, (tUserRoles) => tUserRoles.userIdp)
   tUserRoles: TUserRoles[];
 }

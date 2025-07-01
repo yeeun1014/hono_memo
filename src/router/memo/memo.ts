@@ -1,7 +1,12 @@
+/**
+ * 이건 내가 만든 라우터. 이걸 서버가 사용하게 하려면 등록을 시켜줘야함
+ */
+
 import { Hono } from "hono";
-import { AppDataSource } from "../../data-source1";
+import { AppDataSource } from "../../data-source";
 import { TDummy1 } from "../../entities/TDummy1";
 import { TMemo } from "../../entities/TMemo";
+import { verifyToken } from "../../utils/utils";
 
 const router = new Hono();
 
@@ -13,9 +18,27 @@ router.get("/list", async (c) => {
     message: ``,
   };
   try {
+    let authHeader = c?.req?.header("Authorization") ?? "";
+    try {
+      authHeader = authHeader.split("Bearer ")[1];
+    } catch (error: any) {
+      authHeader = "";
+    }
+    console.log(`## authHeader:`, authHeader);
+    const tokenData: any = verifyToken(authHeader);
+    console.log(`## tokenData:`, tokenData);
+    if (!tokenData?.idp) {
+      result.success = false;
+      result.message = "로그인이 필요합니다";
+      return c.json(result);
+    }
     const memoRepo = AppDataSource.getRepository(TMemo);
     let memos =
-      (await memoRepo.find({ take: 1000, order: { createdDt: "DESC" } })) ?? [];
+      (await memoRepo.find({
+        where: { userIdp: tokenData?.idp },
+        take: 1000,
+        order: { createdDt: "DESC" },
+      })) ?? [];
     result.data = memos;
     return c.json(result);
   } catch (error: any) {
@@ -53,6 +76,20 @@ router.post("/upsert", async (c) => {
     message: ``,
   };
   try {
+    let authHeader = c?.req?.header("Authorization") ?? "";
+    try {
+      authHeader = authHeader.split("Bearer ")[1];
+    } catch (error: any) {
+      authHeader = "";
+    }
+    console.log(`## authHeader:`, authHeader);
+    const tokenData: any = verifyToken(authHeader);
+    console.log(`## tokenData:`, tokenData);
+    if (!tokenData?.idp) {
+      result.success = false;
+      result.message = "로그인이 필요합니다";
+      return c.json(result);
+    }
     // const : 변경 불가능
     const body = await c?.req?.json();
     const idp = Number(body?.idp ?? 0);
@@ -78,6 +115,7 @@ router.post("/upsert", async (c) => {
 
     memo.title = title;
     memo.content = content;
+    memo.userIdp = tokenData?.idp;
 
     memo = await memoRepo.save(memo);
     result.data = memo;
@@ -97,15 +135,19 @@ router.post("/delete", async (c) => {
     message: ``,
   };
   try {
-    // 1. 요청에서 idp 추출
-    const body = await c.req.json();
-    const idp = body.idp;
+    // const : 변경 불가능
+    const body = await c?.req?.json();
+    const idp = Number(body?.idp ?? 0);
 
-    // 2. TMemo 레포지토리 가져오기
     const memoRepo = AppDataSource.getRepository(TMemo);
 
-    // 3. idp로 메모 찾기
-    const memo = await memoRepo.findOneBy({ idp: idp });
+    let memo = (await memoRepo.findOne({ where: { idp: idp } })) ?? new TMemo();
+    if (!memo?.idp) {
+      result.success = false;
+      result.message = `없는 데이터를 삭제하려고 합니다`;
+      return c.json(result);
+    }
+    await memoRepo.remove(memo);
 
     return c.json(result);
   } catch (error: any) {
