@@ -39,14 +39,10 @@ require("reflect-metadata");
 const typeorm_1 = require("typeorm");
 const dotenv = __importStar(require("dotenv"));
 const path = __importStar(require("path"));
-const url_1 = require("url");
 const envFile = process.env.NODE_ENV === "production"
     ? ".env.production"
     : ".env.development";
 dotenv.config({ path: envFile });
-// @ts-ignore
-const __filename = (0, url_1.fileURLToPath)(import.meta.url);
-const __dirname = path.dirname(__filename);
 exports.AppDataSource = new typeorm_1.DataSource({
     type: "postgres",
     host: process.env.DB_HOST,
@@ -57,5 +53,7 @@ exports.AppDataSource = new typeorm_1.DataSource({
     synchronize: false,
     logging: false,
     entities: [path.join(__dirname, "/entities/**/*.{ts,js}")],
-    ssl: { rejectUnauthorized: false },
+    ssl: {
+        rejectUnauthorized: false,
+    },
 });

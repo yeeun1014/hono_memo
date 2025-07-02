@@ -3,12 +3,12 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { AppDataSource } from "./data-source";
+import { AppDataSource } from "./data-source.js";
 import * as dotenv from "dotenv";
 import test1Router from "./router/test1.js";
 import dbtest from "./router/dbtest/dbtest.js";
 import auth from "./router/auth/auth.js";
-import memoRouter from "./router/memo/memo";
+import memoRouter from "./router/memo/memo.js";
 
 // app 이라는 객체를 만들어라. Hono 라는 클래스를 통해서
 // 클래스란건 어떻게 알음?? new 키워드 보고 눈치챔
@@ -35,7 +35,7 @@ AppDataSource.initialize()
   .then(() => {
     console.log("Data Source has been initialized!");
   })
-  .catch((err) => {
+  .catch((err: any) => {
     console.error("Error during Data Source initialization:", err);
   });
 /** DB 연결 END */

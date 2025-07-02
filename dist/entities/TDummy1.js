@@ -12,6 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TDummy1 = void 0;
 const typeorm_1 = require("typeorm");
 let TDummy1 = class TDummy1 {
+    idp;
+    name;
 };
 exports.TDummy1 = TDummy1;
 __decorate([
@@ -25,9 +27,9 @@ __decorate([
         length: 300,
         default: () => "''''",
     }),
-    __metadata("design:type", Object)
+    __metadata("design:type", String)
 ], TDummy1.prototype, "name", void 0);
 exports.TDummy1 = TDummy1 = __decorate([
-    (0, typeorm_1.Index)("untitled_table_213_pkey", ["idp"], { unique: true }),
+    (0, typeorm_1.Index)("untitled_table_215_pkey", ["idp"], { unique: true }),
     (0, typeorm_1.Entity)("t_dummy1", { schema: "public" })
 ], TDummy1);

@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 //@ts-ignore
 import crypto from "crypto";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key";
+const JWT_SECRET = String(process.env.JWT_SECRET);
 const ENCRYPTION_KEY =
   process.env.ENCRYPTION_KEY || "your_32_byte_encryption_key_123456"; // 32 bytes
 const IV_LENGTH = 16; // AES block size
@@ -58,14 +58,15 @@ export const decryptData = (encryptedData: string): string => {
 
 // JWT 생성
 export const generateToken = (
-  payload: object,
+  payload: any,
   expiresIn: string = "1h"
 ): string => {
+  //@ts-ignore
   return jwt.sign(payload, JWT_SECRET, { expiresIn });
 };
 
 // JWT 검증
-export const verifyToken = (token: string): object | null => {
+export const verifyToken = (token: string): any => {
   try {
     return jwt.verify(token, JWT_SECRET);
   } catch (error) {

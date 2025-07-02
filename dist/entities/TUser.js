@@ -13,6 +13,10 @@ exports.TUser = void 0;
 const typeorm_1 = require("typeorm");
 const TUserRoles_1 = require("./TUserRoles");
 let TUser = class TUser {
+    idp;
+    username;
+    password;
+    tUserRoles;
 };
 exports.TUser = TUser;
 __decorate([
@@ -24,9 +28,9 @@ __decorate([
         name: "username",
         nullable: true,
         length: 50,
-        default: () => "''''",
+        default: () => "''''''",
     }),
-    __metadata("design:type", Object)
+    __metadata("design:type", String)
 ], TUser.prototype, "username", void 0);
 __decorate([
     (0, typeorm_1.Column)("character varying", {
@@ -35,10 +39,10 @@ __decorate([
         length: 255,
         default: () => "''''''",
     }),
-    __metadata("design:type", Object)
+    __metadata("design:type", String)
 ], TUser.prototype, "password", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => TUserRoles_1.TUserRoles, (tUserRoles) => tUserRoles.uesrIdp),
+    (0, typeorm_1.OneToMany)(() => TUserRoles_1.TUserRoles, (tUserRoles) => tUserRoles.userIdp),
     __metadata("design:type", Array)
 ], TUser.prototype, "tUserRoles", void 0);
 exports.TUser = TUser = __decorate([

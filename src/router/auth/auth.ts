@@ -3,14 +3,14 @@
  */
 
 import { Hono } from "hono";
-import { AppDataSource } from "../../data-source";
-import { TUser } from "../../entities/TUser";
+import { AppDataSource } from "../../data-source.js";
+import { TUser } from "../../entities/TUser.js";
 import {
   comparePassword,
   generateToken,
   hashPassword,
   verifyToken,
-} from "../../utils/utils";
+} from "../../utils/utils.js";
 import { instanceToPlain } from "class-transformer";
 
 const router = new Hono();
@@ -88,9 +88,8 @@ router.post("/login", async (c) => {
       result.message = `가입되지 않거나, 잘못된 비밀번호 입니다`;
       return c.json(result);
     }
-    console.log(await comparePassword(password, userData.password));
     // 비밀번호가 안맞을때
-    if (!(await comparePassword(password, userData.password))) {
+    if (!(await comparePassword(password, userData?.password ?? ""))) {
       result.success = false;
       result.message = `가입되지 않거나, 잘못된 비밀번호 입니다`;
       return c.json(result);
@@ -147,12 +146,12 @@ router.get("/info", async (c) => {
     message: ``,
   };
   try {
-    const authHeader = c?.req?.header("Authorization");
+    const authHeader = String(c?.req?.header("Authorization") ?? "");
     const token = authHeader.split(" ")[1];
     const decoded: any = verifyToken(token);
     console.log(decoded);
     const hasMasterRole = decoded?.tUserRoles?.some(
-      (role) => role.roleName === "master"
+      (role: any) => role.roleName === "master"
     );
     if (hasMasterRole) result.data = `마스터 권한이 있습니다`;
     else result.data = `마스터 권한이 없습니다`;

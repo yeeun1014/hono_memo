@@ -12,6 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TMemo = void 0;
 const typeorm_1 = require("typeorm");
 let TMemo = class TMemo {
+    idp;
+    title;
+    content;
+    userIdp;
+    createdDt;
 };
 exports.TMemo = TMemo;
 __decorate([
@@ -25,23 +30,23 @@ __decorate([
         length: 500,
         default: () => "''''",
     }),
-    __metadata("design:type", Object)
+    __metadata("design:type", String)
 ], TMemo.prototype, "title", void 0);
 __decorate([
-    (0, typeorm_1.Column)("text", { name: "content", nullable: true, default: () => "''''" }),
-    __metadata("design:type", Object)
+    (0, typeorm_1.Column)("text", { name: "content", nullable: true, default: () => "''''''" }),
+    __metadata("design:type", String)
 ], TMemo.prototype, "content", void 0);
 __decorate([
-    (0, typeorm_1.Column)("integer", { name: "userr_idp", nullable: true, default: () => "0" }),
-    __metadata("design:type", Object)
-], TMemo.prototype, "userrIdp", void 0);
+    (0, typeorm_1.Column)("integer", { name: "user_idp", nullable: true, default: () => "0" }),
+    __metadata("design:type", Number)
+], TMemo.prototype, "userIdp", void 0);
 __decorate([
     (0, typeorm_1.Column)("timestamp with time zone", {
         name: "created_dt",
         nullable: true,
         default: () => "now()",
     }),
-    __metadata("design:type", Object)
+    __metadata("design:type", Date)
 ], TMemo.prototype, "createdDt", void 0);
 exports.TMemo = TMemo = __decorate([
     (0, typeorm_1.Index)("t_memo_pkey", ["idp"], { unique: true }),
